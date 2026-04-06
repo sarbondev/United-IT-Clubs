@@ -1,0 +1,92 @@
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { Axios } from "../../middlewares/Axios";
+import PageTitle from "../../components/PageTitle";
+import Button from "../../components/Button";
+
+const EditService = () => {
+  const navigate = useNavigate();
+  const { id } = useParams();
+  const [imgSaved, setImgSaved] = useState(false);
+  const [serviceData, setServiceData] = useState({
+    title: "",
+    description: "",
+  });
+
+  useEffect(() => {
+    async function getDataById() {
+      try {
+        const response = await Axios.get(`services/${id}`);
+        setServiceData(response.data);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    getDataById();
+  }, [id]);
+
+  const handleGetValues = async (e) => {
+    const { name, value } = e.target;
+    setServiceData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const sendService = async (e) => {
+    e.preventDefault();
+    try {
+      setImgSaved(true);
+      await Axios.put(`services/update/${id}`, serviceData);
+      setServiceData({
+        title: "",
+        description: "",
+      });
+      setImgSaved(false);
+      navigate("/services");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  return (
+    <section className="bg-blue-50 overflow-y-auto p-6">
+      <PageTitle className={"text-center"}>Xizmatni taxrirlash</PageTitle>
+      <form
+        onSubmit={sendService}
+        className="mt-8 bg-white p-6 border rounded-lg"
+      >
+        <div className="space-y-8">
+          <div className="flex flex-col gap-2">
+            <label htmlFor="serviceTitle" className="text-lg">
+              Xizmat Nomi
+            </label>
+            <input
+              placeholder="Xizmat nomini kiriting"
+              type="text"
+              className="border py-2 px-5 text-md rounded-lg"
+              id="serviceTitle"
+              name="title"
+              value={serviceData.title || ""}
+              onChange={handleGetValues}
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <label htmlFor="serviceDescription" className="text-lg">
+              Xizmat haqida malumot
+            </label>
+            <textarea
+              placeholder="Xizmat haqida malumot kiriting"
+              className="border py-2 px-5 text-md min-h-32 rounded-lg"
+              id="serviceDescription"
+              onChange={handleGetValues}
+              value={serviceData.description || ""}
+              name="description"
+            />
+          </div>
+          <Button disabled={imgSaved} className={imgSaved ? "opacity-50" : ""}>
+            {imgSaved ? "Taxrirlanmoqda..." : "Taxrirlash"}
+          </Button>
+        </div>
+      </form>
+    </section>
+  );
+};
+
+export default EditService;
