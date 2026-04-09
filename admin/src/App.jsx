@@ -7,6 +7,8 @@ import AddCourses from "./pages/AddPages/AddCourses";
 import AddProject from "./pages/AddPages/AddProjects";
 import AddServices from "./pages/AddPages/AddServices";
 import AddStaff from "./pages/AddPages/AddStaff";
+import AddStudentFeedback from "./pages/AddPages/AddStudentFeedback";
+import AddParentFeedback from "./pages/AddPages/AddParentFeedback";
 import { Admins } from "./pages/Admins";
 import { Courses } from "./pages/Courses";
 import EditAdmin from "./pages/EditPages/EditAdmin";
@@ -14,11 +16,15 @@ import EditCourse from "./pages/EditPages/EditCourse";
 import EditProject from "./pages/EditPages/EditProject";
 import EditService from "./pages/EditPages/EditServices";
 import EditStaff from "./pages/EditPages/EditStaff";
+import EditStudentFeedback from "./pages/EditPages/EditStudentFeedback";
+import EditParentFeedback from "./pages/EditPages/EditParentFeedback";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import { Projects } from "./pages/Projects";
 import { Services } from "./pages/Services";
 import { Staffs } from "./pages/Staffs";
+import { StudentFeedbacks } from "./pages/StudentFeedbacks";
+import { ParentFeedbacks } from "./pages/ParentFeedbacks";
 import { Axios } from "./middlewares/Axios";
 import {
   getUserError,
@@ -26,6 +32,7 @@ import {
   getUserSuccess,
 } from "./toolkit/UserSlicer";
 import LoadingAnimation from "./components/LoadingAnimation";
+import { Dashboard } from "./pages/Dashboard";
 
 function App() {
   const { isAuth, isPending } = useSelector((state) => state.user);
@@ -55,7 +62,11 @@ function App() {
       children: [
         {
           index: true,
-          element: <Navigate to="/courses" replace />,
+          element: <Navigate to="/dashboard" replace />,
+        },
+        {
+          path: "dashboard",
+          element: <Dashboard />,
         },
         {
           path: "courses",
@@ -78,6 +89,14 @@ function App() {
           element: <Staffs />,
         },
         {
+          path: "studentFeedbacks",
+          element: <StudentFeedbacks />,
+        },
+        {
+          path: "parentFeedbacks",
+          element: <ParentFeedbacks />,
+        },
+        {
           path: "admins/new",
           element: <AddAdmin />,
         },
@@ -98,6 +117,14 @@ function App() {
           element: <AddStaff />,
         },
         {
+          path: "studentFeedbacks/new",
+          element: <AddStudentFeedback />,
+        },
+        {
+          path: "parentFeedbacks/new",
+          element: <AddParentFeedback />,
+        },
+        {
           path: "admins/edit/:id",
           element: <EditAdmin />,
         },
@@ -116,6 +143,14 @@ function App() {
         {
           path: "staffs/edit/:id",
           element: <EditStaff />,
+        },
+        {
+          path: "studentFeedbacks/edit/:id",
+          element: <EditStudentFeedback />,
+        },
+        {
+          path: "parentFeedbacks/edit/:id",
+          element: <EditParentFeedback />,
         },
         { path: "*", element: <NotFound /> },
       ],

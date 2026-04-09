@@ -1,10 +1,15 @@
-function PageTitle({ children, className: styles }) {
+function PageTitle({ children, className = "", subtitle }) {
   return (
-    <h1
-      className={`text-2xl md:text-3xl lg:text-4xl font-bold text-blue-800 bg-clip-text text-transparent bg-gradient-to-r from-blue-700 to-blue-500 ${styles}`}
-    >
-      {children}
-    </h1>
+    <div className={`space-y-2 ${className}`}>
+      <h1 className="display-title text-3xl font-bold tracking-tight text-slate-950 md:text-4xl">
+        {children}
+      </h1>
+      {subtitle && (
+        <p className="max-w-2xl text-sm font-medium leading-6 text-slate-500">
+          {subtitle}
+        </p>
+      )}
+    </div>
   );
 }
 

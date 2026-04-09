@@ -28,6 +28,16 @@ const MainSlice = createSlice({
       data: [],
       isError: false,
     },
+    studentFeedbacks: {
+      isPending: false,
+      data: [],
+      isError: false,
+    },
+    parentFeedbacks: {
+      isPending: false,
+      data: [],
+      isError: false,
+    },
   },
   reducers: {
     getAdminsPending(state) {
@@ -90,6 +100,30 @@ const MainSlice = createSlice({
       state.team.isPending = false;
       state.team.isError = true;
     },
+    getStudentFeedbacksPending(state) {
+      state.studentFeedbacks.isPending = true;
+      state.studentFeedbacks.isError = false;
+    },
+    getStudentFeedbacksSuccess(state, { payload }) {
+      state.studentFeedbacks.isPending = false;
+      state.studentFeedbacks.data = payload;
+    },
+    getStudentFeedbacksError(state) {
+      state.studentFeedbacks.isPending = false;
+      state.studentFeedbacks.isError = true;
+    },
+    getParentFeedbacksPending(state) {
+      state.parentFeedbacks.isPending = true;
+      state.parentFeedbacks.isError = false;
+    },
+    getParentFeedbacksSuccess(state, { payload }) {
+      state.parentFeedbacks.isPending = false;
+      state.parentFeedbacks.data = payload;
+    },
+    getParentFeedbacksError(state) {
+      state.parentFeedbacks.isPending = false;
+      state.parentFeedbacks.isError = true;
+    },
     deleteProject(state, { payload }) {
       state.portfolio.data = state.portfolio.data.filter(
         (item) => item._id !== payload
@@ -110,6 +144,16 @@ const MainSlice = createSlice({
     },
     deleteAdmin(state, { payload }) {
       state.admins.data = state.admins.data.filter(
+        (item) => item._id !== payload
+      );
+    },
+    deleteStudentFeedback(state, { payload }) {
+      state.studentFeedbacks.data = state.studentFeedbacks.data.filter(
+        (item) => item._id !== payload
+      );
+    },
+    deleteParentFeedback(state, { payload }) {
+      state.parentFeedbacks.data = state.parentFeedbacks.data.filter(
         (item) => item._id !== payload
       );
     },
@@ -140,5 +184,13 @@ export const {
   deleteWorker,
   deleteCourse,
   deleteAdmin,
+  getStudentFeedbacksPending,
+  getStudentFeedbacksSuccess,
+  getStudentFeedbacksError,
+  getParentFeedbacksPending,
+  getParentFeedbacksSuccess,
+  getParentFeedbacksError,
+  deleteStudentFeedback,
+  deleteParentFeedback,
 } = MainSlice.actions;
 export default MainSlice.reducer;

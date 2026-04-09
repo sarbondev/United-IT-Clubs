@@ -6,27 +6,11 @@ export const About = () => {
     { number: "10+", label: "Yo'nalishlar" },
   ];
 
-  const values = [
-    {
-      title: "Innovatsiya",
-      description: "Eng so'nggi texnologiyalar va yondashuvlardan foydalanish",
-    },
-    {
-      title: "Jamoaviylik",
-      description: "Kuchli jamoa va hamkorlik muhitini yaratish",
-    },
-    {
-      title: "Sifat",
-      description: "Xalqaro standartlarga javob beradigan mahsulotlar yaratish",
-    },
-    {
-      title: "Rivojlanish",
-      description: "Doimiy o'rganish va professional o'sish",
-    },
-  ];
-
   return (
-    <section id="about" className="py-20 px-4 bg-gradient-to-br from-white via-blue-50 to-white overflow-hidden">
+    <section
+      id="about"
+      className="py-20 px-4 bg-gradient-to-br from-white via-blue-50 to-white overflow-hidden"
+    >
       <div className="container mx-auto max-w-6xl">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-[#5d75a5] mb-4">
@@ -53,30 +37,6 @@ export const About = () => {
               <div className="text-[#5d75a5] font-medium text-sm">
                 {stat.label}
               </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Values */}
-        <div className="text-center mb-12">
-          <h3 className="text-3xl md:text-4xl font-bold text-[#5d75a5] mb-4">
-            Bizning Qadriyatlarimiz
-          </h3>
-          <div className="w-24 h-1 bg-gradient-to-r from-[#55b8ff] to-[#5d75a5] mx-auto rounded-full" />
-        </div>
-
-        <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-          {values.map((value) => (
-            <div
-              key={value.title}
-              className="p-7 bg-gradient-to-br from-blue-50 to-white rounded-2xl border border-[#55b8ff]/15 hover:border-[#55b8ff]/30 transition-all duration-300"
-            >
-              <h4 className="text-xl font-bold text-[#55b8ff] mb-3">
-                {value.title}
-              </h4>
-              <p className="text-[#5d75a5]/70 leading-relaxed">
-                {value.description}
-              </p>
             </div>
           ))}
         </div>

@@ -4,16 +4,22 @@ import { Axios } from "../../middlewares/Axios";
 import LoadingAnimation from "../../components/LoadingAnimation";
 import PageTitle from "../../components/PageTitle";
 import Button from "../../components/Button";
-import ButtonRed from "../../components/ButtonRed";
-import { X } from "@phosphor-icons/react";
+import Input from "../../components/Input";
+import Textarea from "../../components/Textarea";
+import FileUpload from "../../components/FileUpload";
 
 const EditCourse = () => {
-  const path = useNavigate();
+  const navigate = useNavigate();
   const { id } = useParams();
   const [imageLoading, setImageLoading] = useState(false);
   const [isPending, setIsPending] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    image: "",
+  });
+  const [imageFile, setImageFile] = useState(null);
 
   useEffect(() => {
     async function getDataById() {
@@ -32,40 +38,59 @@ const EditCourse = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevProject) => ({
-      ...prevProject,
+    setFormData((prev) => ({
+      ...prev,
       [name]: value,
     }));
   };
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
+    setIsPending(true);
     try {
-      setIsPending(true);
       await Axios.put(`courses/update/${id}`, formData);
-      path("/courses");
+      navigate("/courses");
     } catch (error) {
       console.log(error);
+      alert("Kursni yangilashda xatolik!");
     } finally {
       setIsPending(false);
     }
   };
 
-  const handleFileChange = async (e) => {
+  const handleFileUpload = async (files) => {
     try {
       const formImageData = new FormData();
-      const file = e.target.files[0];
+      const file = files[0] || files.item(0);
+      if (!file) return;
+
       formImageData.append("images", file);
       setImageLoading(true);
       const { data } = await Axios.post("upload", formImageData);
+      const uploadedFile = data.files?.[0];
+      if (!uploadedFile) throw new Error("Uploaded file URL not found");
       setFormData((prevCourse) => ({
         ...prevCourse,
-        image: data.images[0],
+        image: uploadedFile,
       }));
+      setImageFile(file);
     } catch (err) {
       console.log(err);
+      alert("Rasm yuklashda xatolik!");
     } finally {
       setImageLoading(false);
+    }
+  };
+
+  const handleRemoveImage = async () => {
+    try {
+      if (formData.image) {
+        await Axios.post("/removeFile", { image: formData.image });
+      }
+      setFormData((prevData) => ({ ...prevData, image: "" }));
+      setImageFile(null);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -74,93 +99,62 @@ const EditCourse = () => {
   }
 
   return (
-    <section className="bg-blue-50 overflow-y-auto p-6">
-      {isPending ? (
-        <LoadingAnimation>Kurs yuklanmoqda</LoadingAnimation>
-      ) : (
-        <form onSubmit={handleFormSubmit}>
-          <PageTitle className={"text-center"}>
-            Kursning malumotlarini taxrirlash
-          </PageTitle>
-          <div className="bg-white space-y-8 mt-8 p-6">
-            <div className="flex flex-col gap-2">
-              <label htmlFor="courseTitle" className="text-lg">
-                Kurs Nomi
-              </label>
-              <input
-                required
-                placeholder="Kurs nomini kiriting"
-                type="text"
-                className="border py-2 px-5 text-md"
-                id="courseTitle"
-                value={formData.title}
-                onChange={handleInputChange}
-                name="title"
-              />
-            </div>
-            <div className="flex flex-col gap-2">
-              <label htmlFor="courseDescription" className="text-lg">
-                Kurs haqida malumot
-              </label>
-              <textarea
-                required
-                placeholder="Kurs haqida malumot kiriting"
-                className="border py-2 px-5 text-md min-h-32"
-                id="courseDescription"
-                value={formData.description}
-                onChange={handleInputChange}
-                name="description"
-              ></textarea>
-            </div>
-            {!formData.image && (
-              <div className="flex flex-col gap-2">
-                <label htmlFor="courseImage" className="text-lg">
-                  Rasm
-                </label>
-                <input
-                  type="file"
-                  id="courseImage"
-                  name="image"
-                  onChange={handleFileChange}
-                />
-              </div>
-            )}
-            {imageLoading && (
-              <div className="bg-blue-200 py-2 text-center text-blue-600 font-medium border-2 rounded-lg border-blue-600">
-                <h1>Rasm yuklanmoqda</h1>
-              </div>
-            )}
-            {formData.image && !imageLoading ? (
-              <div className="relative w-full md:w-1/2 mx-auto">
-                <img
-                  src={formData.image}
-                  alt={formData.title}
-                  className="h-[300px] object-cover w-full"
-                />
-                <ButtonRed
-                  event={() =>
-                    setFormData((prevData) => ({ ...prevData, image: "" }))
-                  }
-                  type="button"
-                  className="absolute right-2 top-2"
-                >
-                  <X />
-                </ButtonRed>
-              </div>
-            ) : (
-              <h2 className="text-center text-lg opacity-60">
-                Rasm tanlanmagan
-              </h2>
-            )}
+    <section className="page-shell">
+      <div className="page-stack max-w-4xl">
+        <div className="mb-6">
+          <PageTitle>Kurs Ma'lumotlarini Tahrirlash</PageTitle>
+          <p className="text-sm text-slate-500 mt-1">
+            Kurs ma'lumotlarini yangilang
+          </p>
+        </div>
+
+        <form onSubmit={handleFormSubmit} className="section-card space-y-6 p-6 md:p-8">
+          <Input
+            label="Kurs Nomi"
+            name="title"
+            value={formData.title || ""}
+            onChange={handleInputChange}
+            placeholder="Kurs nomini kiriting"
+            required
+          />
+
+          <Textarea
+            label="Kurs Haqida Ma'lumot"
+            name="description"
+            value={formData.description || ""}
+            onChange={handleInputChange}
+            placeholder="Kurs haqida batafsil ma'lumot kiriting"
+            rows={5}
+            required
+          />
+
+          <FileUpload
+            label="Kurs Rasmi"
+            accept="image/*"
+            files={formData.image ? [imageFile || formData.image] : []}
+            onUpload={handleFileUpload}
+            onRemove={handleRemoveImage}
+            uploading={imageLoading}
+          />
+
+          <div className="flex gap-3 pt-4">
             <Button
+              type="submit"
               disabled={isPending || imageLoading}
-              className={isPending ? "opacity-50" : ""}
+              className={isPending || imageLoading ? "opacity-50" : ""}
             >
-              {isPending ? "Loading..." : "Taxrirlash"}
+              {isPending ? "Yangilanmoqda..." : "Saqlash"}
+            </Button>
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => navigate("/courses")}
+            >
+              Bekor qilish
             </Button>
           </div>
         </form>
-      )}
+      </div>
     </section>
   );
 };

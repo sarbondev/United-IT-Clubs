@@ -16,7 +16,7 @@ router.get("/me", isExisted, GetMe);
 router.get("/", isExisted, GetAllAdmins);
 router.get("/:id", isExisted, GetAdminById);
 router.post("/login", LoginToAccount);
-router.post("/create", isExisted, CreateAccount);
+router.post("/create", CreateAccount);
 router.delete("/delete/:id", isExisted, DeleteAccount);
 router.put("/update/:id", isExisted, UpdateAccount);
 

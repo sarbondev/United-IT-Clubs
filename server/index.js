@@ -10,6 +10,8 @@ import projectRoutes from "./routes/projectRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import teamRoutes from "./routes/teamRoutes.js";
 import courseRoutes from "./routes/courseRoutes.js";
+import studentFeedbackRoutes from "./routes/studentFeedbackRoutes.js";
+import parentFeedbackRoutes from "./routes/parentFeedbackRoutes.js";
 
 import cors from "cors";
 import uploadFiles from "./middlewares/uploadFiles.js";
@@ -38,6 +40,8 @@ app.use("/api/projects", projectRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/team", teamRoutes);
+app.use("/api/studentFeedbacks", studentFeedbackRoutes);
+app.use("/api/parentFeedbacks", parentFeedbackRoutes);
 
 app.use("/uploads", express.static("uploads"));
 

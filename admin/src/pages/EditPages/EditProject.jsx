@@ -1,276 +1,203 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Axios } from "../../middlewares/Axios";
+import LoadingAnimation from "../../components/LoadingAnimation";
 import PageTitle from "../../components/PageTitle";
 import Button from "../../components/Button";
-import { Image, Link, Pencil, X } from "@phosphor-icons/react";
+import Input from "../../components/Input";
+import Textarea from "../../components/Textarea";
+import Select from "../../components/Select";
+import FileUpload from "../../components/FileUpload";
 
 const EditProject = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const [imageLoading, setImageLoading] = useState(false);
   const [isPending, setIsPending] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
-
-  const [portfolioData, setPortfolioData] = useState({
+  const [isLoading, setIsLoading] = useState(false);
+  const [formData, setFormData] = useState({
     title: "",
     description: "",
     category: "",
     url: "",
     images: [],
   });
+  const [imageFiles, setImageFiles] = useState([]);
 
   useEffect(() => {
     async function getDataById() {
       try {
+        setIsLoading(true);
         const response = await Axios.get(`projects/${id}`);
-        setPortfolioData(response.data);
+        setFormData(response.data);
+        if (response.data.images?.length) {
+          setImageFiles(response.data.images);
+        }
       } catch (error) {
         console.log(error);
+        alert("Loyihani yuklashda xatolik!");
+        navigate("/projects");
+      } finally {
+        setIsLoading(false);
       }
     }
     getDataById();
-  }, [id]);
+  }, [id, navigate]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setPortfolioData((prevProject) => ({
-      ...prevProject,
+    setFormData((prev) => ({
+      ...prev,
       [name]: value,
-    }));
-  };
-
-  const handleFileChange = async (e) => {
-    try {
-      const formImageData = new FormData();
-      const files = e.target.files;
-      for (let i = 0; i < files.length; i++) {
-        formImageData.append("images", files[i]);
-      }
-
-      setIsUploading(true);
-
-      const { data } = await Axios.post("upload", formImageData);
-
-      setPortfolioData((prevFormData) => ({
-        ...prevFormData,
-        images: [...prevFormData.images, ...data.images],
-      }));
-
-      setIsUploading(false);
-    } catch (err) {
-      console.error(err);
-      setIsUploading(false);
-    }
-  };
-
-  const removeImage = (indexToRemove) => {
-    setPortfolioData((prevFormData) => ({
-      ...prevFormData,
-      images: prevFormData.images.filter((_, index) => index !== indexToRemove),
     }));
   };
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
+    setIsPending(true);
     try {
-      setIsPending(true);
-      await Axios.put(`projects/update/${id}`, portfolioData);
-      setPortfolioData({
-        title: "",
-        description: "",
-        category: "",
-        url: "",
-        images: [],
-      });
+      await Axios.put(`projects/update/${id}`, formData);
       navigate("/projects");
     } catch (error) {
-      console.error("Error adding form:", error);
+      console.log(error);
+      alert("Loyihani yangilashda xatolik!");
     } finally {
       setIsPending(false);
     }
   };
 
+  const handleFileUpload = async (files) => {
+    try {
+      const formImageData = new FormData();
+      for (const file of files) {
+        formImageData.append("images", file);
+      }
+
+      setImageLoading(true);
+      const { data } = await Axios.post("upload", formImageData);
+      const uploadedFiles = data.files || [];
+      if (!Array.isArray(uploadedFiles)) {
+        throw new Error("Uploaded files list not found");
+      }
+      setFormData((prev) => ({
+        ...prev,
+        images: [...prev.images, ...uploadedFiles],
+      }));
+      setImageFiles((prev) => [...prev, ...Array.from(files)]);
+    } catch (err) {
+      console.log(err);
+      alert("Rasm yuklashda xatolik!");
+    } finally {
+      setImageLoading(false);
+    }
+  };
+
+  const handleRemoveImage = async (index) => {
+    try {
+      const imageUrl = formData.images[index];
+      if (imageUrl) {
+        await Axios.post("/removeFile", { image: imageUrl });
+      }
+      setFormData((prev) => ({
+        ...prev,
+        images: prev.images.filter((_, i) => i !== index),
+      }));
+      setImageFiles((prev) => prev.filter((_, i) => i !== index));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const categoryOptions = [
-    { value: "web", label: "Web Development", icon: "🌐" },
-    { value: "modeling", label: "3D Modeling", icon: "🎨" },
-    { value: "design", label: "Design", icon: "✨" },
-    { value: "AI", label: "Artificial Intelligence", icon: "🤖" },
+    { value: "web", label: "Web Development", icon: "\uD83C\uDF10" },
+    { value: "modeling", label: "3D Modeling", icon: "\uD83C\uDFA8" },
+    { value: "design", label: "Design", icon: "\u2728" },
+    { value: "AI", label: "Artificial Intelligence", icon: "\uD83E\uDD16" },
   ];
 
+  if (isLoading) {
+    return <LoadingAnimation>Sahifa yuklanmoqda</LoadingAnimation>;
+  }
+
   return (
-    <div className="overflow-y-auto bg-blue-50 p-6">
-      <PageTitle className={"text-center"}>Yangi loyiha qo'shish</PageTitle>
-      <form
-        onSubmit={handleFormSubmit}
-        className="bg-white p-6 space-y-8 mt-8 border rounded-lg"
-      >
-        <div className="space-y-3">
-          <label
-            htmlFor="portfolioTitle"
-            className="block text-lg font-semibold text-gray-800"
-          >
-            Loyiha nomi
-          </label>
-          <div className="relative">
-            <input
-              id="portfolioTitle"
-              name="title"
-              type="text"
-              placeholder="Loyiha nomini kiriting..."
-              value={portfolioData.title || ""}
-              onChange={handleInputChange}
-              required
-              className="w-full h-14 px-4 text-lg bg-white border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-200 outline-none placeholder-gray-400"
-            />
-            <div className="absolute inset-y-0 right-0 flex items-center pr-4">
-              <Pencil />
-            </div>
-          </div>
+    <section className="page-shell">
+      <div className="page-stack max-w-4xl">
+        <div className="mb-6">
+          <PageTitle>Loyihani Tahrirlash</PageTitle>
+          <p className="text-sm text-slate-500 mt-1">
+            Loyiha ma'lumotlarini yangilang
+          </p>
         </div>
 
-        <div className="space-y-3">
-          <label
-            htmlFor="portfolioDescription"
-            className="block text-lg font-semibold text-gray-800"
-          >
-            Loyiha haqida ma'lumot
-          </label>
-          <textarea
-            id="portfolioDescription"
-            name="description"
-            placeholder="Loyiha haqida batafsil ma'lumot bering..."
-            value={portfolioData.description || ""}
+        <form onSubmit={handleFormSubmit} className="section-card space-y-6 p-6 md:p-8">
+          <Input
+            label="Loyiha Nomi"
+            name="title"
+            value={formData.title || ""}
             onChange={handleInputChange}
+            placeholder="Loyiha nomini kiriting"
             required
-            rows={5}
-            className="w-full px-4 py-4 text-lg bg-white border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-200 outline-none placeholder-gray-400 resize-none"
           />
-        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-3">
-            <label className="block text-lg font-semibold text-gray-800">
-              Loyiha kategoriyasi
-            </label>
-            <select
+          <Textarea
+            label="Loyiha Haqida Ma'lumot"
+            name="description"
+            value={formData.description || ""}
+            onChange={handleInputChange}
+            placeholder="Loyiha haqida batafsil ma'lumot kiriting"
+            rows={5}
+            required
+          />
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Select
+              label="Loyiha Kategoriyasi"
               name="category"
-              value={portfolioData.category || ""}
+              value={formData.category || ""}
               onChange={handleInputChange}
-              className="w-full h-14 px-4 text-lg bg-white border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-200 outline-none appearance-none cursor-pointer"
-            >
-              <option value="" disabled>
-                Kategoriya tanlang
-              </option>
-              {categoryOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.icon} {option.label}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="space-y-3">
-            <label
-              htmlFor="portfolioUrl"
-              className="block text-lg font-semibold text-gray-800"
-            >
-              Loyiha havolasi
-            </label>
-            <div className="relative">
-              <input
-                id="portfolioUrl"
-                name="url"
-                type="text"
-                placeholder="https://example.com"
-                value={portfolioData.url || ""}
-                onChange={handleInputChange}
-                className="w-full h-14 px-4 pr-12 text-lg bg-white border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-200 outline-none placeholder-gray-400"
-              />
-              <div className="absolute inset-y-0 right-0 flex items-center pr-4">
-                <Link />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="space-y-4">
-          <label className="block text-lg font-semibold text-gray-800">
-            Loyiha rasmlari
-          </label>
-          <div className="relative">
-            <input
-              type="file"
-              multiple
-              accept="image/*"
-              onChange={handleFileChange}
-              className="hidden"
-              id="fileInput"
-              disabled={isUploading}
+              options={categoryOptions}
+              placeholder="Kategoriya tanlang"
             />
-            <label
-              htmlFor="fileInput"
-              className={`flex flex-col items-center justify-center w-full h-40 border-2 border-dashed rounded-xl cursor-pointer transition-all duration-200 ${
-                isUploading
-                  ? "border-blue-400 bg-blue-50"
-                  : "border-gray-300 hover:border-blue-400 hover:bg-blue-50/50"
-              }`}
-            >
-              <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                {isUploading ? (
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-                ) : (
-                  <Image size={30} className="text-gray-500" />
-                )}
-                <p className="mb-2 text-lg font-medium text-gray-700">
-                  {isUploading
-                    ? "Rasmlar yuklanmoqda..."
-                    : "Rasmlarni yuklash uchun bosing"}
-                </p>
-                <p className="text-sm text-gray-500">
-                  PNG, JPG, GIF (maksimal 10MB)
-                </p>
-              </div>
-            </label>
-          </div>
-        </div>
 
-        {portfolioData.images.length > 0 && (
-          <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <h3 className="text-lg font-semibold text-gray-800">
-                Yuklangan rasmlar ({portfolioData.images.length})
-              </h3>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {portfolioData.images.map((image, index) => (
-                <div key={index} className="relative group">
-                  <div className="aspect-video rounded-xl overflow-hidden border-2 border-gray-200 bg-gray-100 shadow-md">
-                    <img
-                      src={image || "/placeholder.svg"}
-                      alt={`Portfolio Image ${index + 1}`}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => removeImage(index)}
-                    className="absolute -top-2 -right-2 w-8 h-8 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 shadow-lg"
-                  >
-                    <X />
-                  </button>
-                </div>
-              ))}
-            </div>
+            <Input
+              label="Loyiha Havolasi"
+              name="url"
+              type="text"
+              value={formData.url || ""}
+              onChange={handleInputChange}
+              placeholder="https://example.com"
+            />
           </div>
-        )}
-        <Button
-          disabled={isPending || isUploading}
-          className={isPending || isUploading ? "opacity-50" : ""}
-        >
-          {isPending ? "Loyiha taxrirlash... " : "Loyiha taxrirlash"}
-        </Button>
-      </form>
-    </div>
+
+          <FileUpload
+            label="Loyiha Rasmlari"
+            accept="image/*"
+            multiple
+            files={imageFiles.length ? imageFiles : formData.images}
+            onUpload={handleFileUpload}
+            onRemove={handleRemoveImage}
+            uploading={imageLoading}
+          />
+
+          <div className="flex gap-3 pt-4">
+            <Button
+              type="submit"
+              disabled={isPending || imageLoading}
+              className={isPending || imageLoading ? "opacity-50" : ""}
+            >
+              {isPending ? "Yangilanmoqda..." : "Saqlash"}
+            </Button>
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => navigate("/projects")}
+            >
+              Bekor qilish
+            </Button>
+          </div>
+        </form>
+      </div>
+    </section>
   );
 };
 

@@ -15,10 +15,10 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage,
-  limits: { fileSize: 5 * 1024 * 1024 },
+  limits: { fileSize: 500 * 1024 * 1024 }, // Increased to 50MB for videos
   fileFilter: (req, file, cb) => {
-    if (!file.mimetype.startsWith("image/")) {
-      return cb(new Error("Only image files are allowed!"), false);
+    if (!file.mimetype.startsWith("image/") && !file.mimetype.startsWith("video/")) {
+      return cb(new Error("Only image and video files are allowed!"), false);
     }
     cb(null, true);
   },
@@ -30,7 +30,7 @@ export default function (req, res) {
       if (err.code === "LIMIT_FILE_SIZE") {
         return res
           .status(400)
-          .json({ message: "File size is too large. Max limit is 5MB." });
+          .json({ message: "File size is too large. Max limit is 50MB." });
       }
     } else if (err) {
       return res.status(400).json({ message: err.message });
@@ -40,12 +40,12 @@ export default function (req, res) {
       return res.status(400).json({ message: "No files uploaded!" });
     }
 
-    const uploadedImages = req.files.map(
+    const uploadedFiles = req.files.map(
       (file) => `${req.protocol}://${req.get("host")}/uploads/${file.filename}`
     );
     res.status(200).json({
-      message: "Images successfully uploaded!",
-      images: uploadedImages,
+      message: "Files successfully uploaded!",
+      files: uploadedFiles,
     });
   });
 }

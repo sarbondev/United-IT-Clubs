@@ -3,8 +3,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Axios } from "../../middlewares/Axios";
 import PageTitle from "../../components/PageTitle";
 import Button from "../../components/Button";
-import ButtonRed from "../../components/ButtonRed";
-import { X } from "@phosphor-icons/react";
+import Input from "../../components/Input";
+import FileUpload from "../../components/FileUpload";
 import LoadingAnimation from "../../components/LoadingAnimation";
 
 const EditStaff = () => {
@@ -18,6 +18,7 @@ const EditStaff = () => {
     job: "",
     image: "",
   });
+  const [imageFile, setImageFile] = useState(null);
 
   useEffect(() => {
     async function getDataById() {
@@ -44,34 +45,48 @@ const EditStaff = () => {
     setIsPending(true);
     try {
       await Axios.put(`team/update/${id}`, formData);
-      setFormData({
-        name: "",
-        job: "",
-        image: "",
-      });
       navigate("/staffs");
     } catch (error) {
       console.log(error);
+      alert("Xodimni yangilashda xatolik!");
     } finally {
       setIsPending(false);
     }
   };
 
-  const handleFileChange = async (e) => {
+  const handleFileUpload = async (files) => {
     try {
       const formImageData = new FormData();
-      const file = e.target.files[0];
+      const file = files[0] || files.item(0);
+      if (!file) return;
+
       formImageData.append("images", file);
       setImageLoading(true);
       const { data } = await Axios.post("upload", formImageData);
+      const uploadedFile = data.files?.[0];
+      if (!uploadedFile) throw new Error("Uploaded file URL not found");
       setFormData((prevWorker) => ({
         ...prevWorker,
-        image: data.images[0],
+        image: uploadedFile,
       }));
+      setImageFile(file);
     } catch (err) {
       console.log(err);
+      alert("Rasm yuklashda xatolik!");
     } finally {
       setImageLoading(false);
+    }
+  };
+
+  const handleRemoveImage = async () => {
+    try {
+      if (formData.image) {
+        await Axios.post("/removeFile", { image: formData.image });
+      }
+      setFormData((prevData) => ({ ...prevData, image: "" }));
+      setImageFile(null);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -80,85 +95,61 @@ const EditStaff = () => {
   }
 
   return (
-    <section className="bg-blue-50 overflow-y-auto p-6">
-      <PageTitle className={"text-center"}>Xodimni taxrirlash</PageTitle>
-      <form
-        className="border p-6 rounded-lg bg-white mt-8 space-y-8"
-        onSubmit={(e) => handleFormSubmit(e)}
-      >
-        <div className="flex flex-col gap-2">
-          <label htmlFor="workerName" className="text-lg">
-            Ism kiriting
-          </label>
-          <input
+    <section className="page-shell">
+      <div className="page-stack max-w-3xl">
+        <div className="mb-6">
+          <PageTitle>Xodim Ma'lumotlarini Tahrirlash</PageTitle>
+          <p className="text-sm text-slate-500 mt-1">
+            Xodim ma'lumotlarini yangilang
+          </p>
+        </div>
+
+        <form onSubmit={handleFormSubmit} className="section-card space-y-6 p-6 md:p-8">
+          <Input
+            label="To'liq Ism"
+            name="name"
             value={formData.name || ""}
             onChange={handleInputChange}
-            placeholder="Ism Kiriting"
-            type="text"
-            className="border py-2 px-5 text-md rounded-lg"
-            id="workerName"
-            name="name"
+            placeholder="Xodim ismini kiriting"
+            required
           />
-        </div>
-        <div className="flex flex-col gap-2">
-          <label htmlFor="workerJob" className="text-lg">
-            Ishi
-          </label>
-          <input
+
+          <Input
+            label="Lavozimi"
+            name="job"
             value={formData.job || ""}
             onChange={handleInputChange}
-            placeholder="Ish kiriting"
-            type="text"
-            className="border py-2 px-5 text-md rounded-lg"
-            id="workerJob"
-            name="job"
+            placeholder="Masalan: Developer, Designer"
+            required
           />
-        </div>
-        {!formData.image && (
-          <div className="flex flex-col gap-2">
-            <label htmlFor="courseImage" className="text-lg">
-              Rasm
-            </label>
-            <input
-              type="file"
-              id="courseImage"
-              name="image"
-              onChange={handleFileChange}
-            />
-          </div>
-        )}
-        {imageLoading && (
-          <div className="bg-blue-200 py-2 text-center text-blue-600 font-medium border-2 rounded-lg border-blue-600">
-            <h1>Rasm yuklanmoqda</h1>
-          </div>
-        )}
-        {formData.image && !imageLoading ? (
-          <div className="relative w-full md:w-1/2 mx-auto">
-            <img
-              src={formData.image}
-              alt={formData.title}
-              className="h-[300px] object-cover w-full"
-            />
-            <ButtonRed
-              event={() =>
-                setFormData((prevData) => ({ ...prevData, image: "" }))
-              }
-              type="button"
-              className="absolute right-2 top-2"
+
+          <FileUpload
+            label="Xodim Rasmi"
+            accept="image/*"
+            files={formData.image ? [imageFile || formData.image] : []}
+            onUpload={handleFileUpload}
+            onRemove={handleRemoveImage}
+            uploading={imageLoading}
+          />
+
+          <div className="flex gap-3 pt-4">
+            <Button
+              type="submit"
+              disabled={isPending || imageLoading}
+              className={isPending || imageLoading ? "opacity-50" : ""}
             >
-              <X />
-            </ButtonRed>
+              {isPending ? "Yangilanmoqda..." : "Saqlash"}
+            </Button>
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => navigate("/staffs")}
+            >
+              Bekor qilish
+            </Button>
           </div>
-        ) : (
-          <h2 className="text-center text-lg opacity-60">Rasm tanlanmagan</h2>
-        )}
-        <Button
-          disabled={isPending || imageLoading}
-          className={isPending ? "opacity-50" : ""}
-        >
-          {isPending ? "Yaratilmoqda..." : "Yaratish"}
-        </Button>
-      </form>
+        </form>
+      </div>
     </section>
   );
 };

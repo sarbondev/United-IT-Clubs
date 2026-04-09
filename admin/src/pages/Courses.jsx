@@ -7,13 +7,10 @@ import {
   getCoursesPending,
   getCoursesSuccess,
 } from "../toolkit/Slicer";
-import { Pencil, Trash } from "@phosphor-icons/react";
 import { Axios } from "../middlewares/Axios";
-import LoadingAnimation from "../components/LoadingAnimation";
+import DataTable from "../components/DataTable";
 import Button from "../components/Button";
-import PageTitle from "../components/PageTitle";
-import ErrorTitle from "../components/ErrorTitle";
-import NoDataTitle from "../components/NoDataTitle";
+import Badge from "../components/Badge";
 
 export const Courses = () => {
   const dispatch = useDispatch();
@@ -34,13 +31,11 @@ export const Courses = () => {
     getData();
   }, [dispatch]);
 
-  const handleDelete = async (id) => {
-    const confirm = window.confirm("Bu kursni o'chirib tashlamoqchimisiz?");
-    if (confirm) {
+  const handleDelete = async (item) => {
+    if (window.confirm(`"${item.title}" kursini o'chirib tashlamoqchimisiz?`)) {
       try {
-        await Axios.delete("courses/delete/" + id);
-        dispatch(deleteCourse(id));
-        alert("Kurs muvaffaqiyatli o'chirildi!");
+        await Axios.delete("courses/delete/" + item._id);
+        dispatch(deleteCourse(item._id));
       } catch (error) {
         console.error("Error deleting course:", error);
         alert("Kursni o'chirib bo'lmadi!");
@@ -48,77 +43,64 @@ export const Courses = () => {
     }
   };
 
+  const columns = [
+    {
+      header: "Nomi",
+      accessor: "title",
+      render: (item) => (
+        <span className="font-medium text-slate-900">{item.title}</span>
+      ),
+    },
+    {
+      header: "Rasm",
+      accessor: "image",
+      render: (item) => (
+        <div className="flex justify-center">
+          {item.image ? (
+            <img
+              src={item.image}
+              alt={item.title}
+              className="w-16 h-12 object-cover rounded-md border border-slate-200 shadow-sm"
+            />
+          ) : (
+            <div className="w-16 h-12 bg-slate-100 rounded-md flex items-center justify-center">
+              <svg
+                className="w-6 h-6 text-slate-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                />
+              </svg>
+            </div>
+          )}
+        </div>
+      ),
+    },
+  ];
+
   return (
-    <section className="p-6 bg-blue-50 overflow-y-auto">
-      <div className="flex justify-between items-center mb-8">
-        <PageTitle>Kurslar</PageTitle>
-        <Link to={"/courses/new"}>
+    <DataTable
+      title="Kurslar"
+      description="Kurs kartalari, preview rasmlari va o'quv dasturlarini bir joydan boshqaring."
+      columns={columns}
+      data={data}
+      isPending={isPending}
+      isError={isError}
+      onEdit={(item) => (window.location.href = `/courses/edit/${item._id}`)}
+      onDelete={handleDelete}
+      searchable={true}
+      searchPlaceholder="Kurs qidirish..."
+      addAction={
+        <Link to="/courses/new">
           <Button>Yangi Kurs</Button>
         </Link>
-      </div>
-
-      {isPending ? (
-        <LoadingAnimation>Kurslar yuklanmoqda</LoadingAnimation>
-      ) : isError ? (
-        <ErrorTitle>{isError}</ErrorTitle>
-      ) : data.length === 0 ? (
-        <NoDataTitle>Kurslar yo'q</NoDataTitle>
-      ) : (
-        <table className="w-full bg-white">
-          <thead>
-            <tr className="bg-blue-100 text-blue-700">
-              <th className="py-4 px-6 text-left font-semibold">Nomi</th>
-              <th className="py-4 px-6 text-center font-semibold">Rasm</th>
-              <th className="py-4 px-6 text-center font-semibold">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.map((course) => (
-              <tr
-                key={course._id}
-                className="border-t border-blue-50 hover:bg-blue-50/50 transition-colors duration-150"
-              >
-                <td className="py-4 px-6 text-slate-700 font-medium">
-                  {course.title}
-                </td>
-                <td className="py-4 px-6">
-                  {course.image ? (
-                    <div className="flex justify-center">
-                      <img
-                        src={course.image || "/placeholder.svg"}
-                        className="w-16 h-12 object-cover rounded-md shadow-sm border border-slate-200"
-                        alt={course.title}
-                      />
-                    </div>
-                  ) : (
-                    <div className="flex justify-center">
-                      <div className="w-16 h-12 bg-slate-100 rounded-md flex items-center justify-center text-slate-400 text-xs">
-                        No image
-                      </div>
-                    </div>
-                  )}
-                </td>
-                <td className="py-3 px-6">
-                  <div className="flex items-center justify-center gap-2">
-                    <Link
-                      to={`/courses/edit/${course._id}`}
-                      className="px-2 py-2 text-blue-700 rounded-full hover:bg-blue-100 transition-colors inline-flex items-center"
-                    >
-                      <Pencil size={20} weight="bold" />
-                    </Link>
-                    <button
-                      onClick={() => handleDelete(course._id)}
-                      className="px-2 py-2 text-red-700 rounded-full hover:bg-red-100 transition-colors inline-flex items-center"
-                    >
-                      <Trash size={20} weight="bold" />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
-    </section>
+      }
+    />
   );
 };

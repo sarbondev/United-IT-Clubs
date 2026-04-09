@@ -1,16 +1,22 @@
-import { Warning } from "@phosphor-icons/react";
+import { Warning, ArrowClockwise } from "@phosphor-icons/react";
 
-function ErrorTitle({ children }) {
+function ErrorTitle({ children, onRetry }) {
   return (
-    <div className="py-16 flex flex-col items-center justify-center text-center px-4">
-      <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mb-4">
-        <Warning className="text-red-600" size={28} />
+    <div className="section-card flex flex-col items-center justify-center px-4 py-16 text-center">
+      <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-danger-50">
+        <Warning className="text-danger-600" size={32} weight="fill" />
       </div>
-      <h3 className="text-lg font-medium text-red-800 mb-2">{children}</h3>
+      <h3 className="display-title mb-2 text-2xl font-bold text-slate-950">
+        {children}
+      </h3>
+      <p className="mb-6 max-w-md text-sm leading-6 text-slate-500">
+        Xatolik yuz berdi. Qayta urinish uchun tugmani bosing.
+      </p>
       <button
-        onClick={() => window.location.reload()}
-        className="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors"
+        onClick={onRetry || (() => window.location.reload())}
+        className="btn btn-primary"
       >
+        <ArrowClockwise size={16} />
         Yangilash
       </button>
     </div>

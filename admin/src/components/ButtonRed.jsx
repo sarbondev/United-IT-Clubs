@@ -1,9 +1,12 @@
-function ButtonRed({ children, event, className: styles, type }) {
+function ButtonRed({ children, event, onClick, className = "", disabled, type = "button" }) {
+  const handleClick = event || onClick;
+
   return (
     <button
-      onClick={event}
       type={type}
-      className={`bg-gradient-to-r from-red-600 to-red-500 py-2.5 px-5 rounded-lg text-white font-medium transition-all ${styles}`}
+      onClick={handleClick}
+      disabled={disabled}
+      className={`btn btn-danger ${className}`}
     >
       {children}
     </button>

@@ -66,18 +66,26 @@ export const Team = () => {
             <div className="mt-14 flex justify-center">
               <div className="inline-flex items-center gap-8 bg-gradient-to-r from-blue-50 to-white rounded-2xl px-8 py-5 border border-[#55b8ff]/15">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-[#55b8ff]">{data.length}+</div>
-                  <div className="text-[#5d75a5]/60 text-xs font-medium">Mutaxassislar</div>
+                  <div className="text-2xl font-bold text-[#55b8ff]">
+                    {data.length}+
+                  </div>
+                  <div className="text-[#5d75a5]/60 text-xs font-medium">
+                    Mutaxassislar
+                  </div>
                 </div>
                 <div className="w-px h-10 bg-[#55b8ff]/20" />
                 <div className="text-center">
                   <div className="text-2xl font-bold text-[#55b8ff]">100+</div>
-                  <div className="text-[#5d75a5]/60 text-xs font-medium">Loyihalar</div>
+                  <div className="text-[#5d75a5]/60 text-xs font-medium">
+                    Loyihalar
+                  </div>
                 </div>
                 <div className="w-px h-10 bg-[#55b8ff]/20" />
                 <div className="text-center">
                   <div className="text-2xl font-bold text-[#55b8ff]">5+</div>
-                  <div className="text-[#5d75a5]/60 text-xs font-medium">Yillik tajriba</div>
+                  <div className="text-[#5d75a5]/60 text-xs font-medium">
+                    Yillik tajriba
+                  </div>
                 </div>
               </div>
             </div>

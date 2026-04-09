@@ -1,5 +1,6 @@
 import Admin from "../models/admin.js";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 import generateToken from "../middlewares/generateToken.js";
 
 const sendErrorResponse = (res, statusCode, message) => {
@@ -31,6 +32,22 @@ export const GetAdminById = async (req, res) => {
 export const CreateAccount = async (req, res) => {
   try {
     const { email, password, name } = req.body;
+    const adminCount = await Admin.countDocuments();
+
+    if (adminCount > 0) {
+      const token = (req.headers.authorization || "").replace(/Bearer\s?/, "");
+
+      if (!token) {
+        return res.status(401).json({ message: "Access not allowed!" });
+      }
+
+      try {
+        jwt.verify(token, process.env.JWTSECRETKEY);
+      } catch (error) {
+        return res.status(401).json({ message: "Invalid or expired token!" });
+      }
+    }
+
     const existedAdmin = await Admin.findOne({ email });
     if (existedAdmin) {
       return res.status(400).json({ message: "User already exists." });
@@ -39,7 +56,7 @@ export const CreateAccount = async (req, res) => {
     const admin = new Admin({ name, email, password: hashedPassword });
     await admin.save();
 
-    const token = generateToken({ id: admin._id });
+    const token = generateToken({ _id: admin._id });
 
     return res.status(201).json({
       message: "New admin created!",

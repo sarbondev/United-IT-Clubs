@@ -1,9 +1,26 @@
-function Button({ children, event, className: styles, disabled }) {
+function Button({ children, event, onClick, className = "", disabled, variant = "primary", type = "button", size = "md" }) {
+  const baseClasses = "btn";
+  const variants = {
+    primary: "btn-primary",
+    secondary: "btn-secondary",
+    danger: "btn-danger",
+    ghost: "btn-ghost",
+  };
+
+  const sizes = {
+    sm: "px-3 py-1.5 text-xs",
+    md: "px-5 py-2.5 text-sm",
+    lg: "px-6 py-3 text-base",
+  };
+
+  const handleClick = event || onClick;
+
   return (
     <button
-      onClick={event}
+      type={type}
+      onClick={handleClick}
       disabled={disabled}
-      className={`bg-gradient-to-r from-emerald-600 to-emerald-500 py-2 px-5 rounded-lg text-white font-medium transition-all ${styles}`}
+      className={`${baseClasses} ${variants[variant]} ${sizes[size]} ${className}`}
     >
       {children}
     </button>

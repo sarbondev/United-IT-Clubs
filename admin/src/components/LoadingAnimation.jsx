@@ -1,21 +1,16 @@
-function LoadingAnimation({ children }) {
+function LoadingAnimation({ children, size = "md" }) {
+  const sizeClass = size === "sm" ? "scale-90" : size === "lg" ? "scale-125" : "";
+
   return (
-    <div className="h-screen flex flex-col items-center justify-center">
-      <div className="flex justify-center items-center space-x-2 mb-4">
-        <div
-          className="w-4 h-4 rounded-full bg-blue-400 animate-bounce"
-          style={{ animationDelay: "0.1s" }}
-        ></div>
-        <div
-          className="w-4 h-4 rounded-full bg-blue-500 animate-bounce"
-          style={{ animationDelay: "0.2s" }}
-        ></div>
-        <div
-          className="w-4 h-4 rounded-full bg-blue-600 animate-bounce"
-          style={{ animationDelay: "0.3s" }}
-        ></div>
+    <div className="section-card flex flex-col items-center justify-center px-4 py-16 text-center">
+      <div className={`dot-loader mb-5 ${sizeClass}`}>
+        <span />
+        <span />
+        <span />
       </div>
-      <p className="text-blue-600 uppercase font-bold">{children}</p>
+      {children && (
+        <p className="text-sm font-medium text-slate-600">{children}</p>
+      )}
     </div>
   );
 }

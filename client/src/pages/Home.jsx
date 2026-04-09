@@ -6,6 +6,7 @@ import { Portfolio } from "../modules/Portfolio";
 import { Team } from "../modules/Team";
 import { Courses } from "../modules/Courses";
 import { Services } from "../modules/Services";
+import { Feedback } from "../modules/Feedback";
 
 export const Home = () => {
   return (
@@ -17,6 +18,7 @@ export const Home = () => {
       <Courses />
       <Features />
       <Team />
+      <Feedback />
       <Booking />
     </>
   );

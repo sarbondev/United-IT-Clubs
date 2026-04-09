@@ -2,13 +2,15 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Axios } from "../../middlewares/Axios";
 import PageTitle from "../../components/PageTitle";
-import { Eye, EyeClosed } from "@phosphor-icons/react";
 import Button from "../../components/Button";
+import Input from "../../components/Input";
+import { Eye, EyeClosed } from "@phosphor-icons/react";
 
 const EditAdmin = () => {
-  const path = useNavigate();
+  const navigate = useNavigate();
   const { id } = useParams();
   const [showPass, setShowPass] = useState(false);
+  const [isPending, setIsPending] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -29,84 +31,92 @@ const EditAdmin = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevAdmin) => ({
-      ...prevAdmin,
+    setFormData((prev) => ({
+      ...prev,
       [name]: value,
     }));
   };
 
   const submitUpdatedInfo = async (e) => {
     e.preventDefault();
+    setIsPending(true);
     try {
       await Axios.put(`admin/update/${id}`, formData);
-      path("/admins");
+      navigate("/admins");
     } catch (error) {
       console.log(error);
+      alert("Adminni yangilashda xatolik!");
+    } finally {
+      setIsPending(false);
     }
   };
 
   return (
-    <section className="bg-blue-50 overflow-y-auto p-6">
-      <form onSubmit={submitUpdatedInfo}>
-        <PageTitle className={"text-center"}>Admin taxrirlash</PageTitle>
-        <div className="bg-white p-6 mt-8 space-y-5 border rounded-lg">
-          <div className="flex flex-col gap-2">
-            <label htmlFor="adminName" className="text-lg">
-              To'liq ism kiriting:
-            </label>
-            <input
-              required
-              placeholder="Suhrob Rahmatullayev"
-              type="text"
-              className="border py-2 px-5 text-md rounded-lg"
-              id="adminName"
-              name="name"
-              value={formData.name}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div className="flex flex-col gap-2">
-            <label htmlFor="adminEmail" className="text-lg">
-              Email:
-            </label>
-            <input
-              required
-              placeholder="Email kiriting"
-              type="email"
-              className="border py-2 px-5 text-md rounded-lg"
-              id="adminEmail"
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div className="flex flex-col gap-2">
-            <label htmlFor="adminPassword" className="text-lg">
-              Parol
-            </label>
-            <div className="border py-1 px-5 text-lg flex items-center gap-3 rounded-lg">
+    <section className="page-shell">
+      <div className="page-stack max-w-3xl">
+        <div className="mb-6">
+          <PageTitle>Admin Ma'lumotlarini Tahrirlash</PageTitle>
+          <p className="text-sm text-slate-500 mt-1">
+            Admin ma'lumotlarini yangilang
+          </p>
+        </div>
+
+        <form onSubmit={submitUpdatedInfo} className="section-card space-y-6 p-6 md:p-8">
+          <Input
+            label="To'liq Ism"
+            name="name"
+            value={formData.name || ""}
+            onChange={handleInputChange}
+            placeholder="Suhrob Rahmatullayev"
+            required
+          />
+
+          <Input
+            label="Email"
+            name="email"
+            type="email"
+            value={formData.email || ""}
+            onChange={handleInputChange}
+            placeholder="admin@example.com"
+            required
+          />
+
+          <div>
+            <label className="form-label">Parol</label>
+            <div className="relative">
               <input
                 required
-                value={formData.password}
+                value={formData.password || ""}
                 onChange={handleInputChange}
                 type={showPass ? "text" : "password"}
                 placeholder="Parol kiriting"
-                className="outline-none w-full"
-                id="adminPassword"
                 name="password"
+                className="form-input pr-12"
               />
-              <span
-                onClick={() =>
-                  showPass ? setShowPass(false) : setShowPass(true)
-                }
+              <button
+                type="button"
+                onClick={() => setShowPass(!showPass)}
+                className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600 transition-colors"
               >
-                {showPass ? <Eye /> : <EyeClosed />}
-              </span>
+                {showPass ? <Eye size={18} weight="bold" /> : <EyeClosed size={18} weight="bold" />}
+              </button>
             </div>
           </div>
-          <Button>Taxrirlash</Button>
-        </div>
-      </form>
+
+          <div className="flex gap-3 pt-4">
+            <Button type="submit" disabled={isPending}>
+              {isPending ? "Yangilanmoqda..." : "Saqlash"}
+            </Button>
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => navigate("/admins")}
+            >
+              Bekor qilish
+            </Button>
+          </div>
+        </form>
+      </div>
     </section>
   );
 };
