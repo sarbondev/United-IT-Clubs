@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import useSWR from "swr";
-import { fetcher } from "../middlewares/Fetcher";
+import { fetcher } from "../shared/api/Fetcher";
 
 const CourseSkeleton = () => (
   <div className="bg-white rounded-2xl border border-[#55b8ff]/10 overflow-hidden">

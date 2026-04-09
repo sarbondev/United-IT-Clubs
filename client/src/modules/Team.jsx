@@ -1,4 +1,4 @@
-import { fetcher } from "../middlewares/Fetcher";
+import { fetcher } from "../shared/api/Fetcher";
 import useSWR from "swr";
 
 const TeamSkeleton = () => (

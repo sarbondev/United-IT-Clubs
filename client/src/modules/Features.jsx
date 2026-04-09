@@ -1,9 +1,9 @@
-import img1 from "../assets/features/1.png";
-import img2 from "../assets/features/2.png";
-import img3 from "../assets/features/3.png";
-import img4 from "../assets/features/4.png";
-import img5 from "../assets/features/5.png";
-import img6 from "../assets/features/6.png";
+import img1 from "../shared/assets/features/1.png";
+import img2 from "../shared/assets/features/2.png";
+import img3 from "../shared/assets/features/3.png";
+import img4 from "../shared/assets/features/4.png";
+import img5 from "../shared/assets/features/5.png";
+import img6 from "../shared/assets/features/6.png";
 
 const cards = [
   {

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import useSWR from "swr";
-import { fetcher } from "../middlewares/Fetcher";
+import { fetcher } from "../shared/api/Fetcher";
 
 const ProjectSkeleton = () => (
   <div className="rounded-2xl overflow-hidden break-inside-avoid mb-4">

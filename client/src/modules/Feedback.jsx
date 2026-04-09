@@ -1,5 +1,5 @@
 import useSWR from "swr";
-import { fetcher } from "../middlewares/Fetcher";
+import { fetcher } from "../shared/api/Fetcher";
 
 export const Feedback = () => {
   const {

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID } from "../lib/config";
+import { TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID } from "../shared/config/config";
 
 const floatingBadges = [
   { text: "Amaliy loyihalar", top: "12%", right: "8%", delay: "0s" },

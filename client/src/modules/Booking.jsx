@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID } from "../lib/config";
-import BookingSvg from "../assets/booking/1.svg";
+import { TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID } from "../shared/config/config";
+import BookingSvg from "../shared/assets/booking/1.svg";
 
 export const Booking = () => {
   const [status, setStatus] = useState("idle");
