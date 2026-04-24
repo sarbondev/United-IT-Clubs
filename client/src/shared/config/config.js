@@ -1,4 +1,5 @@
-export const API_URL = "http://localhost:3000/api";
+// export const API_URL = "http://localhost:3000/api";
+export const API_URL = "https://nb.uitc.uz/api";
 
 export const TELEGRAM_BOT_TOKEN =
   "8601097437:AAEbJC0nvax0rjTk9gpxLCJ0CNBtB8R_GEI";
