@@ -8,7 +8,9 @@ const __dirname = path.dirname(__filename);
 
 export const getAllCourses = async function (req, res) {
   try {
-    const titleRegExp = req.query.title ? new RegExp(req.query.title, "i") : /.*/;
+    const titleRegExp = req.query.title
+      ? new RegExp(req.query.title, "i")
+      : /.*/;
 
     const courses = await Course.find({
       title: titleRegExp,
@@ -54,7 +56,7 @@ export const updateCourse = async (req, res) => {
     const updateCourse = await Course.findByIdAndUpdate(
       req.params.id,
       req.body,
-      { new: true }
+      { new: true },
     );
     if (!updateCourse) return res.status(404).json({ message: "NOT FOUND!" });
     return res.status(200).json({
@@ -73,7 +75,14 @@ export const deleteCourse = async (req, res) => {
 
     if (deleteCourse.image) {
       const slicedPhoto = deleteCourse.image.slice(30);
-      const filePath = path.join(__dirname, "..", "..", "..", "uploads", slicedPhoto);
+      const filePath = path.join(
+        __dirname,
+        "..",
+        "..",
+        "..",
+        "uploads",
+        slicedPhoto,
+      );
       try {
         if (fs.existsSync(filePath)) {
           fs.unlinkSync(filePath);

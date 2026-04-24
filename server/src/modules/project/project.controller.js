@@ -74,7 +74,7 @@ export const updateProject = async (req, res) => {
     const updateProject = await Project.findByIdAndUpdate(
       req.params.id,
       req.body,
-      { new: true }
+      { new: true },
     );
     if (!updateProject) return res.status(404).json({ message: "Not found!" });
     res.status(200).json({
@@ -94,7 +94,14 @@ export const deleteProject = async (req, res) => {
     if (project.images && project.images.length > 0) {
       project.images.forEach((image) => {
         const slicedImage = image.slice(30);
-        const filePath = path.join(__dirname, "..", "..", "..", "uploads", slicedImage);
+        const filePath = path.join(
+          __dirname,
+          "..",
+          "..",
+          "..",
+          "uploads",
+          slicedImage,
+        );
         try {
           if (fs.existsSync(filePath)) {
             fs.unlinkSync(filePath);
