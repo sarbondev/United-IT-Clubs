@@ -1,24 +1,15 @@
 import { useState } from "react";
 import { TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID } from "../shared/config/config";
-import BookingSvg from "../shared/assets/booking/1.svg";
+
 
 export const Booking = () => {
   const [status, setStatus] = useState("idle");
-
-  const [formData, setFormData] = useState({
-    fullname: "",
-    contact: "",
-  });
+  const [formData, setFormData] = useState({ fullname: "", contact: "" });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setStatus("sending");
-
-    const text =
-      `📋 *Yangi ro'yxatdan o'tish!*\n\n` +
-      `👤 *Ism:* ${formData.fullname}\n` +
-      `📞 *Telefon:* ${formData.contact}`;
-
+    const text = `📋 *Yangi ro'yxatdan o'tish!*\n\n👤 *Ism:* ${formData.fullname}\n📞 *Telefon:* ${formData.contact}`;
     try {
       const res = await fetch(
         `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,
@@ -42,111 +33,127 @@ export const Booking = () => {
     }
   };
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
+  const handleChange = (e) =>
+    setFormData({ ...formData, [e.target.name]: e.target.value });
 
   return (
-    <section id="booking" className="relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-br from-[#55b8ff] via-[#9AD2FB] to-[#EFF6FF]" />
-
-      <div className="relative z-10 py-20 px-4">
-        <div className="container mx-auto max-w-5xl">
-          <div className="bg-white/70 backdrop-blur-xl border border-white/30 shadow-2xl grid grid-cols-1 lg:grid-cols-2 p-8 lg:p-14 gap-10 rounded-3xl">
-            <div className="flex flex-col gap-6 justify-center items-center text-center">
-              <div className="space-y-3">
-                <h2 className="text-3xl lg:text-4xl font-bold text-[#5d75a5]">
-                  Bizga qo'shiling!
+    <section id="booking" className="py-24 px-4 bg-[#EFF6FF]">
+      <div className="container mx-auto max-w-7xl px-4 md:px-8">
+        <div className="bg-white rounded-3xl border border-slate-100 shadow-xl shadow-blue-50/50 overflow-hidden">
+          <div className="grid lg:grid-cols-2">
+            {/* Left info */}
+            <div className="bg-[#2563EB] p-10 lg:p-14 flex flex-col justify-between gap-10">
+              <div>
+                <span className="text-blue-200 text-xs font-bold uppercase tracking-widest">
+                  Ro'yxatdan o'tish
+                </span>
+                <h2 className="text-4xl font-black text-white mt-3 mb-4 leading-tight">
+                  Bizga
+                  <br />
+                  qo'shiling!
                 </h2>
-                <p className="text-[#5d75a5]/70 text-lg">
-                  Kelajakni biz bilan birga quring
+                <p className="text-blue-100 text-base leading-relaxed max-w-xs">
+                  Kelajakni biz bilan birga quring. Birinchi qadam — bu forma.
                 </p>
               </div>
-              <img
-                src={BookingSvg}
-                alt="Students learning"
-                className="w-56 h-56 lg:w-72 lg:h-72 object-contain drop-shadow-lg"
-              />
+
+              <div className="space-y-4">
+                {[
+                  "Professional mentorlar bilan o'rganing",
+                  "Amaliy loyihalar ustida ishlang",
+                  "Kasbiy sertifikat oling",
+                ].map((item) => (
+                  <div key={item} className="flex items-center gap-3">
+                    <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
+                      <svg
+                        className="w-3 h-3 text-white"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={3}
+                          d="M5 13l4 4L19 7"
+                        />
+                      </svg>
+                    </div>
+                    <span className="text-blue-100 text-sm">{item}</span>
+                  </div>
+                ))}
+              </div>
             </div>
 
-            {status === "success" ? (
-              <div className="flex flex-col justify-center items-center gap-3 py-8">
-                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                  <svg
-                    className="w-6 h-6 text-green-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2.5}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                </div>
-                <p className="text-[#5d75a5] font-semibold">
-                  Muvaffaqiyatli yuborildi!
-                </p>
-                <p className="text-[#5d75a5]/60 text-sm">
-                  Tez orada siz bilan bog'lanamiz
-                </p>
-              </div>
-            ) : (
-              <form
-                onSubmit={handleSubmit}
-                className="flex flex-col justify-center gap-6"
-              >
-                <div className="text-center space-y-1">
-                  <h3 className="text-xl font-semibold text-[#5d75a5]">
-                    Ro'yxatdan o'ting
-                  </h3>
-                  <p className="text-[#5d75a5]/60 text-sm">
-                    Ma'lumotlaringizni kiriting va biz siz bilan bog'lanamiz
+            {/* Right form */}
+            <div className="p-10 lg:p-14 flex flex-col justify-center">
+              {status === "success" ? (
+                <div className="flex flex-col items-center gap-4 py-10 text-center">
+                  <div className="w-16 h-16 rounded-full bg-green-50 border border-green-200 flex items-center justify-center">
+                    <svg
+                      className="w-8 h-8 text-green-500"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2.5}
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                  </div>
+                  <p className="text-[#0F172A] font-bold text-xl">
+                    Muvaffaqiyatli yuborildi!
+                  </p>
+                  <p className="text-slate-500 text-sm">
+                    Tez orada siz bilan bog'lanamiz
                   </p>
                 </div>
-
-                <div className="space-y-4">
-                  <input
-                    type="text"
-                    name="fullname"
-                    value={formData.fullname}
-                    onChange={handleChange}
-                    className="w-full bg-white/60 backdrop-blur-sm border border-white/30 shadow-sm p-4 rounded-xl outline-none focus:ring-2 focus:ring-[#55b8ff] transition-all duration-300 placeholder-[#5d75a5]/50"
-                    placeholder="Ismingiz va familiyangiz"
-                    required
-                  />
-
-                  <input
-                    type="tel"
-                    name="contact"
-                    value={formData.contact}
-                    onChange={handleChange}
-                    className="w-full bg-white/60 backdrop-blur-sm border border-white/30 shadow-sm p-4 rounded-xl outline-none focus:ring-2 focus:ring-[#55b8ff] transition-all duration-300 placeholder-[#5d75a5]/50"
-                    placeholder="Telefon raqamingiz"
-                    required
-                  />
-
-                  {status === "error" && (
-                    <p className="text-red-500 text-sm text-center">
-                      Xatolik yuz berdi. Qaytadan urinib ko'ring.
-                    </p>
-                  )}
-
-                  <button
-                    type="submit"
-                    disabled={status === "sending"}
-                    className="w-full bg-gradient-to-r from-[#55b8ff] to-[#5d75a5] hover:from-[#5d75a5] hover:to-[#55b8ff] text-white font-semibold text-lg py-4 px-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 disabled:opacity-60"
-                  >
-                    {status === "sending" ? "Yuborilmoqda..." : "Yuborish"}
-                  </button>
-                </div>
-              </form>
-            )}
+              ) : (
+                <>
+                  <h3 className="text-2xl font-black text-[#0F172A] mb-1.5">
+                    Forma to'ldiring
+                  </h3>
+                  <p className="text-slate-400 text-sm mb-8">
+                    Ma'lumotlaringizni kiriting va biz siz bilan bog'lanamiz
+                  </p>
+                  <form onSubmit={handleSubmit} className="space-y-4">
+                    <input
+                      type="text"
+                      name="fullname"
+                      value={formData.fullname}
+                      onChange={handleChange}
+                      className="w-full border-2 border-slate-100 focus:border-[#2563EB] bg-slate-50 focus:bg-white p-4 rounded-xl outline-none transition-all duration-200 placeholder-slate-400 text-[#0F172A] text-sm"
+                      placeholder="Ismingiz va familiyangiz"
+                      required
+                    />
+                    <input
+                      type="tel"
+                      name="contact"
+                      value={formData.contact}
+                      onChange={handleChange}
+                      className="w-full border-2 border-slate-100 focus:border-[#2563EB] bg-slate-50 focus:bg-white p-4 rounded-xl outline-none transition-all duration-200 placeholder-slate-400 text-[#0F172A] text-sm"
+                      placeholder="Telefon raqamingiz"
+                      required
+                    />
+                    {status === "error" && (
+                      <p className="text-red-500 text-xs">
+                        Xatolik yuz berdi. Qaytadan urinib ko'ring.
+                      </p>
+                    )}
+                    <button
+                      type="submit"
+                      disabled={status === "sending"}
+                      className="w-full bg-[#F97316] hover:bg-[#EA6C0A] disabled:opacity-60 text-white font-bold py-4 rounded-xl transition-colors duration-200 text-sm"
+                    >
+                      {status === "sending" ? "Yuborilmoqda..." : "Yuborish →"}
+                    </button>
+                  </form>
+                </>
+              )}
+            </div>
           </div>
         </div>
       </div>

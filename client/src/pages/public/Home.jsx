@@ -13,12 +13,12 @@ export const Home = () => {
     <>
       <Hero />
       <About />
+      <Feedback />
       <Services />
       <Portfolio />
       <Courses />
       <Features />
       <Team />
-      <Feedback />
       <Booking />
     </>
   );

@@ -6,66 +6,39 @@ import img5 from "../shared/assets/features/5.png";
 import img6 from "../shared/assets/features/6.png";
 
 const cards = [
-  {
-    title: "Tajribali mentorlar",
-    description:
-      "Har bir mentor dars o'tish va loyihalar ustida ishlashda yetarlicha tajribaga ega.",
-    icon: img1,
-  },
-  {
-    title: "30% nazariy, 70% amaliy",
-    description:
-      "Darslar nazariy va amaliy tarzda olib boriladi. Amaliy ish bajarish ko'proq tashkil etilgan.",
-    icon: img2,
-  },
-  {
-    title: "Individual yordam",
-    description:
-      "O'rganish mobaynida yuzaga keladigan savollar va qiyinchiliklarda mentorlardan yordam olish mumkin.",
-    icon: img3,
-  },
-  {
-    title: "Jamoa bo'lib ishlash",
-    description:
-      "Kurs davomida guruhlardagi o'rganuvchilar jamoaviy muhitda fikr va tajriba almashishlari mumkin.",
-    icon: img4,
-  },
-  {
-    title: "Ish topish uchun konsultatsiya",
-    description:
-      "Kurslarni yakunlagach ish topish va frilansda ishlash uchun mentorlardan yordam olish imkoniyati mavjud.",
-    icon: img5,
-  },
-  {
-    title: "Sertifikat",
-    description:
-      "Kurslarni muvaffaqiyatli tugatgan o'quvchilar sertifikat bilan taqdirlanadilar.",
-    icon: img6,
-  },
+  { title: "Tajribali mentorlar", description: "Har bir mentor dars o'tish va loyihalar ustida ishlashda yetarlicha tajribaga ega.", icon: img1 },
+  { title: "30% nazariy, 70% amaliy", description: "Amaliy ish bajarish ko'proq tashkil etilgan. Real loyihalar orqali o'rganasiz.", icon: img2 },
+  { title: "Individual yordam", description: "O'rganish mobaynida yuzaga keladigan savollar va qiyinchiliklarda yordam olasiz.", icon: img3 },
+  { title: "Jamoa bo'lib ishlash", description: "Guruhlardagi o'rganuvchilar jamoaviy muhitda fikr va tajriba almashishlari mumkin.", icon: img4 },
+  { title: "Ish topish konsultatsiyasi", description: "Kurslarni yakunlagach ish topish va frilansda ishlash uchun yordam olish mumkin.", icon: img5 },
+  { title: "Sertifikat", description: "Kurslarni muvaffaqiyatli tugatgan o'quvchilar tan olingan sertifikat bilan taqdirlanadilar.", icon: img6 },
 ];
 
 export const Features = () => {
   return (
-    <section id="features" className="py-20 px-4 bg-gradient-to-br from-blue-50 to-white">
-      <div className="container mx-auto max-w-6xl">
-        <div className="text-center mb-14">
-          <h2 className="text-4xl font-bold text-[#5d75a5] mb-4">
-            Bizning afzalliklarimiz
+    <section id="features" className="py-24 px-4 bg-white">
+      <div className="container mx-auto max-w-7xl px-4 md:px-8">
+        <div className="max-w-xl mb-14">
+          <span className="text-[#2563EB] text-xs font-bold uppercase tracking-widest">Afzalliklar</span>
+          <h2 className="text-4xl lg:text-5xl font-black text-[#0F172A] mt-3 mb-4 leading-tight">
+            Nima uchun aynan biz?
           </h2>
-          <div className="w-24 h-1 bg-gradient-to-r from-[#55b8ff] to-[#5d75a5] mx-auto rounded-full" />
+          <p className="text-slate-500 text-lg">
+            Sifatli ta'lim va professional rivojlanish uchun zarur bo'lgan hamma narsa bir joyda.
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {cards.map((card) => (
-            <div
-              key={card.title}
-              className="p-7 bg-white rounded-2xl border border-[#55b8ff]/15 hover:border-[#55b8ff]/30 hover:shadow-lg transition-all duration-300"
-            >
-              <div className="flex justify-between items-start mb-4">
-                <h3 className="font-bold text-lg text-[#5d75a5] pr-4">{card.title}</h3>
-                <img src={card.icon} alt={card.title} className="w-12 h-12 flex-shrink-0" />
+            <div key={card.title}
+              className="group p-7 bg-white rounded-2xl border border-slate-100 hover:border-blue-100 hover:shadow-lg transition-all duration-300">
+              <div className="flex items-start justify-between mb-5">
+                <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center group-hover:bg-[#2563EB] transition-colors duration-300">
+                  <img src={card.icon} alt={card.title} className="w-6 h-6 group-hover:brightness-[100] group-hover:invert transition-all duration-300" />
+                </div>
               </div>
-              <p className="text-[#5d75a5]/60 text-sm leading-relaxed">{card.description}</p>
+              <h3 className="font-bold text-[#0F172A] text-base mb-2">{card.title}</h3>
+              <p className="text-slate-500 text-sm leading-relaxed">{card.description}</p>
             </div>
           ))}
         </div>
